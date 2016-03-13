@@ -364,62 +364,6 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        SpinnerDialog.closeDialogs(this);
-        Dialog.closeDialogs();
-
-        if (controllerHandler != null) {
-            InputManager inputManager = (InputManager) getSystemService(Context.INPUT_SERVICE);
-            inputManager.unregisterInputDeviceListener(controllerHandler);
-        }
-
-        wifiLock.release();
-
-        if (connectedToUsbDriverService) {
-            // Unbind from the discovery service
-            unbindService(usbDriverServiceConnection);
-        }
-
-        if (conn != null) {
-            VideoDecoderRenderer.VideoFormat videoFormat = conn.getActiveVideoFormat();
-
-            displayedFailureDialog = true;
-            stopConnection();
-
-            int averageEndToEndLat = decoderRenderer.getAverageEndToEndLatency();
-            int averageDecoderLat = decoderRenderer.getAverageDecoderLatency();
-            String message = null;
-            if (averageEndToEndLat > 0) {
-                message = getResources().getString(R.string.conn_client_latency)+" "+averageEndToEndLat+" ms";
-                if (averageDecoderLat > 0) {
-                    message += " ("+getResources().getString(R.string.conn_client_latency_hw)+" "+averageDecoderLat+" ms)";
-                }
-            }
-            else if (averageDecoderLat > 0) {
-                message = getResources().getString(R.string.conn_hardware_latency)+" "+averageDecoderLat+" ms";
-            }
-
-            // Add the video codec to the post-stream toast
-            if (message != null && videoFormat != VideoDecoderRenderer.VideoFormat.Unknown) {
-                if (videoFormat == VideoDecoderRenderer.VideoFormat.H265) {
-                    message += " [H.265]";
-                }
-                else {
-                    message += " [H.264]";
-                }
-            }
-
-            if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-            }
-        }
-
-        finish();
-    }
-
     private final Runnable toggleGrab = new Runnable() {
         @Override
         public void run() {
@@ -945,9 +889,56 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        if (connected) {
-            stopConnection();
+        SpinnerDialog.closeDialogs(this);
+        Dialog.closeDialogs();
+
+        if (controllerHandler != null) {
+            InputManager inputManager = (InputManager) getSystemService(Context.INPUT_SERVICE);
+            inputManager.unregisterInputDeviceListener(controllerHandler);
         }
+
+        wifiLock.release();
+
+        if (connectedToUsbDriverService) {
+            // Unbind from the discovery service
+            unbindService(usbDriverServiceConnection);
+        }
+
+        if (conn != null) {
+            VideoDecoderRenderer.VideoFormat videoFormat = conn.getActiveVideoFormat();
+
+            displayedFailureDialog = true;
+            stopConnection();
+
+            int averageEndToEndLat = decoderRenderer.getAverageEndToEndLatency();
+            int averageDecoderLat = decoderRenderer.getAverageDecoderLatency();
+            String message = null;
+            if (averageEndToEndLat > 0) {
+                message = getResources().getString(R.string.conn_client_latency)+" "+averageEndToEndLat+" ms";
+                if (averageDecoderLat > 0) {
+                    message += " ("+getResources().getString(R.string.conn_client_latency_hw)+" "+averageDecoderLat+" ms)";
+                }
+            }
+            else if (averageDecoderLat > 0) {
+                message = getResources().getString(R.string.conn_hardware_latency)+" "+averageDecoderLat+" ms";
+            }
+
+            // Add the video codec to the post-stream toast
+            if (message != null && videoFormat != VideoDecoderRenderer.VideoFormat.Unknown) {
+                if (videoFormat == VideoDecoderRenderer.VideoFormat.H265) {
+                    message += " [H.265]";
+                }
+                else {
+                    message += " [H.264]";
+                }
+            }
+
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+        }
+
+        finish();
     }
 
     @Override
