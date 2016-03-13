@@ -125,6 +125,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     public static final String EXTRA_UNIQUEID = "UniqueId";
     public static final String EXTRA_STREAMING_REMOTE = "Remote";
 
+    private int actionMoveLimiter;
+    private boolean ignoreTouches;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -665,10 +668,14 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 {
                 case MotionEvent.ACTION_POINTER_DOWN:
                 case MotionEvent.ACTION_DOWN:
+                    ignoreTouches = false;
                     context.touchDownEvent(eventX, eventY);
                     break;
                 case MotionEvent.ACTION_POINTER_UP:
                 case MotionEvent.ACTION_UP:
+                    if (ignoreTouches) {
+                        break;
+                    }
                     if (event.getPointerCount() == 1) {
                         // All fingers up
                         if (SystemClock.uptimeMillis() - threeFingerDownTime < THREE_FINGER_TAP_THRESHOLD) {
@@ -684,8 +691,35 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    // Two finger scrolling
+                    if (event.getPointerCount() == 2) {
+                        ignoreTouches = true;
+                        // Cancel the first and second touches to avoid erroneous events
+                        for (TouchContext aTouchContext : touchContextMap) {
+                            aTouchContext.cancelTouch();
+                        }
+
+                        if (event.getHistorySize() > 0) {
+                            if (actionMoveLimiter % 3 == 0) {
+                                if (event.getY() - event.getHistoricalY(0) > 0) {
+                                    conn.sendMouseScroll((byte) 1);
+                                }
+                                else if (event.getY() - event.getHistoricalY(0) < 0) {
+                                    conn.sendMouseScroll((byte) -1);
+                                }
+                            }
+                            actionMoveLimiter++;
+                        }
+
+                        break;
+                    }
+
                     // ACTION_MOVE is special because it always has actionIndex == 0
                     // We'll call the move handlers for all indexes manually
+
+                    if (ignoreTouches) {
+                        break;
+                    }
 
                     // First process the historical events
                     for (int i = 0; i < event.getHistorySize(); i++) {
