@@ -1,30 +1,6 @@
 package com.limelight;
 
 
-import com.limelight.binding.PlatformBinding;
-import com.limelight.binding.input.ControllerHandler;
-import com.limelight.binding.input.KeyboardTranslator;
-import com.limelight.binding.input.NvMouseHelper;
-import com.limelight.binding.input.TouchContext;
-import com.limelight.binding.input.driver.UsbDriverService;
-import com.limelight.binding.input.evdev.EvdevHandler;
-import com.limelight.binding.input.evdev.EvdevListener;
-import com.limelight.binding.input.virtual_controller.VirtualController;
-import com.limelight.binding.video.EnhancedDecoderRenderer;
-import com.limelight.binding.video.MediaCodecDecoderRenderer;
-import com.limelight.binding.video.MediaCodecHelper;
-import com.limelight.nvstream.NvConnection;
-import com.limelight.nvstream.NvConnectionListener;
-import com.limelight.nvstream.StreamConfiguration;
-import com.limelight.nvstream.av.video.VideoDecoderRenderer;
-import com.limelight.nvstream.http.NvApp;
-import com.limelight.nvstream.input.KeyboardPacket;
-import com.limelight.nvstream.input.MouseButtonPacket;
-import com.limelight.preferences.PreferenceConfiguration;
-import com.limelight.ui.GameGestures;
-import com.limelight.utils.Dialog;
-import com.limelight.utils.SpinnerDialog;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
@@ -55,9 +31,33 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.limelight.binding.PlatformBinding;
+import com.limelight.binding.input.ControllerHandler;
+import com.limelight.binding.input.KeyboardTranslator;
+import com.limelight.binding.input.NvMouseHelper;
+import com.limelight.binding.input.TouchContext;
+import com.limelight.binding.input.driver.UsbDriverService;
+import com.limelight.binding.input.evdev.EvdevHandler;
+import com.limelight.binding.input.evdev.EvdevListener;
+import com.limelight.binding.input.virtual_controller.VirtualController;
+import com.limelight.binding.video.EnhancedDecoderRenderer;
+import com.limelight.binding.video.MediaCodecDecoderRenderer;
+import com.limelight.binding.video.MediaCodecHelper;
+import com.limelight.nvstream.NvConnection;
+import com.limelight.nvstream.NvConnectionListener;
+import com.limelight.nvstream.StreamConfiguration;
+import com.limelight.nvstream.av.video.VideoDecoderRenderer;
+import com.limelight.nvstream.http.NvApp;
+import com.limelight.nvstream.input.KeyboardPacket;
+import com.limelight.nvstream.input.MouseButtonPacket;
+import com.limelight.preferences.PreferenceConfiguration;
+import com.limelight.ui.GameGestures;
+import com.limelight.utils.Dialog;
+import com.limelight.utils.SpinnerDialog;
 
 import java.util.Locale;
 
@@ -224,7 +224,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     "This device or ROM doesn't support hardware accelerated H.264 playback.", true);
             return;
         }
-        
+
         StreamConfiguration config = new StreamConfiguration.Builder()
                 .setResolution(prefConfig.width, prefConfig.height)
                 .setRefreshRate(prefConfig.fps)
@@ -939,8 +939,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         prefConfig.width, prefConfig.height);
             }
 
-            conn.start(PlatformBinding.getDeviceName(), holder, drFlags,
-                    PlatformBinding.getAudioRenderer(), decoderRenderer);
+            conn.start(PlatformBinding.getDeviceName(), holder, drFlags, prefConfig.playHostAudio ? PlatformBinding.getAudioRendererPlaceholder() : PlatformBinding.getAudioRenderer(), decoderRenderer);
         }
     }
 

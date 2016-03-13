@@ -122,7 +122,7 @@
     <string name="title_checkbox_enable_sops">Optimize game settings</string>
     <string name="summary_checkbox_enable_sops">Allow GFE to modify game settings for optimal streaming</string>
     <string name="title_checkbox_host_audio">Play audio on PC</string>
-    <string name="summary_checkbox_host_audio">Play audio from the computer and this device</string>
+    <string name="summary_checkbox_host_audio">Play audio from the computer</string>
 
     <string name="category_advanced_settings">Advanced Settings</string>
     <string name="title_video_format">Change H.265 settings</string>
