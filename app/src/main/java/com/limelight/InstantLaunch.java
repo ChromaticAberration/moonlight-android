@@ -78,7 +78,7 @@ public class InstantLaunch extends Activity {
                         String lastRawApplist = CacheHelper.readInputStreamToString(CacheHelper.openCacheFileForInput(getCacheDir(), "applist", uuidString));
                         List<NvApp> applist = NvHTTP.getAppListByReader(new StringReader(lastRawApplist));
                         for (NvApp app : applist) {
-                            AppView.AppObject appObject = new AppView().new AppObject(app);
+                            AppView.AppObject appObject = new AppView.AppObject(app);
                             if (appObject.app.getAppName().toLowerCase().contains("windows")) {
                                 ServerHelper.doStart(InstantLaunch.this, appObject.app, computer, managerBinder);
                                 break;
