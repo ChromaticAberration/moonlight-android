@@ -673,9 +673,6 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     break;
                 case MotionEvent.ACTION_POINTER_UP:
                 case MotionEvent.ACTION_UP:
-                    if (ignoreTouches) {
-                        break;
-                    }
                     if (event.getPointerCount() == 1) {
                         // All fingers up
                         if (SystemClock.uptimeMillis() - threeFingerDownTime < THREE_FINGER_TAP_THRESHOLD) {
@@ -683,6 +680,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                             showKeyboard();
                             return true;
                         }
+                    }
+                    if (ignoreTouches) {
+                        break;
                     }
                     context.touchUpEvent(eventX, eventY);
                     if (actionIndex == 0 && event.getPointerCount() > 1 && !context.isCancelled()) {
